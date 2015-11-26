@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>he-profiler-native-parent</artifactId>
+    <groupId>edu.uchicago.cs.heprofiler</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>..</relativePath>
+  </parent>
+
+  <artifactId>libhe-profiler-wrapper</artifactId>
+  <name>Heartbeat/EnergyMon Profiler Native Unix/Linux</name>
+  <packaging>so</packaging>
+
+  <properties>
+    <LDFLAGS></LDFLAGS>
+    <CFLAGS>-I/usr/local/include/he-profiler</CFLAGS>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>edu.uchicago.cs.heprofiler</groupId>
+      <artifactId>he-profiler-native-jni</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>native-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <!-- trigger javah -->
+          <javahOS>unix</javahOS>
+          <sources>
+            <source>
+              <directory>${basedir}/../src/main/native</directory>
+              <fileNames>
+                <fileName>he-profiler-wrapper.c</fileName>
+              </fileNames>
+            </source>
+          </sources>
+          <compilerStartOptions>
+            <compilerStartOption>-fPIC</compilerStartOption>
+            <compilerStartOption>-Wall</compilerStartOption>
+            <compilerStartOption>-Wno-unknown-pragmas</compilerStartOption>
+            <compilerStartOption>${CFLAGS}</compilerStartOption>
+          </compilerStartOptions>
+          <linkerStartOptions>
+            <linkerStartOption>-shared</linkerStartOption>
+          </linkerStartOptions>
+          <linkerEndOptions>
+            <linkerEndOption>${LDFLAGS}</linkerEndOption>
+            <linkerEndOption>-lhe-profiler</linkerEndOption>
+            <linkerEndOption>-lhbs-pow</linkerEndOption>
+            <linkerEndOption>-lenergymon-default</linkerEndOption>
+          </linkerEndOptions>
+        </configuration>
+        <executions>
+          <execution>
+            <id>javah</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <javahOS>unix</javahOS>
+              <javahProvider>default</javahProvider>
+              <javahOutputDirectory>${project.build.directory}/custom-javah</javahOutputDirectory>
+              <workingDirectory>${basedir}</workingDirectory>
+              <javahOutputFileName>he-profiler-wrapper.h</javahOutputFileName>
+              <javahClassNames>
+                <javahClassName>edu.uchicago.cs.heprofiler.HEProfilerJNI</javahClassName>
+              </javahClassNames>
+            </configuration>
+            <goals>
+              <goal>javah</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

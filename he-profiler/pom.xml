@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>he-profiler-parent</artifactId>
+    <groupId>edu.uchicago.cs.heprofiler</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <artifactId>he-profiler</artifactId>
+  <name>Heartbeat/EnergyMon Profiler Java Bindings</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>edu.uchicago.cs.heprofiler</groupId>
+      <artifactId>he-profiler-native-jni</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>unix</id>
+      <activation>
+        <os>
+          <family>unix</family>
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>edu.uchicago.cs.heprofiler</groupId>
+          <artifactId>libhe-profiler-wrapper</artifactId>
+          <type>so</type>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>-Djava.library.path=${basedir}/../native/native-unix/target:${java.library.path}</argLine>
+              <environmentVariables>
+                <LD_LIBRARY_PATH>${env.LD_LIBRARY_PATH}</LD_LIBRARY_PATH>
+              </environmentVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

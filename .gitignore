@@ -1,0 +1,10 @@
+*~
+target/
+
+# crash logs
+hs_err_pid*
+
+# Eclipse files
+.settings
+.project
+.classpath
