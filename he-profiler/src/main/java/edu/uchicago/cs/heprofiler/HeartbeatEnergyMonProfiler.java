@@ -1,5 +1,6 @@
 package edu.uchicago.cs.heprofiler;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -61,5 +62,19 @@ public class HeartbeatEnergyMonProfiler {
 			initialized.set(false);
 			finished.set(false);
 		}
+	}
+
+	/**
+	 * Utility function to convert enum names to Strings. Useful for specifying
+	 * profilerNames in {@link #init(int, int, String[], long, String, String)}.
+	 * 
+	 * @param e
+	 * @return String array
+	 */
+	public static String[] toProfilerNames(final Class<? extends Enum<?>> e) {
+		if (e == null) {
+			return null;
+		}
+		return Arrays.toString(e.getEnumConstants()).replaceAll("^.|.$", "").split(", ");
 	}
 }
