@@ -97,12 +97,17 @@ JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_finish(JNIE
 /**
  * Allocate memory for an he_profiler_event.
  * Returns a pointer to the he_profiler_event, or NULL on failure.
+ * Optionally, the event may begin (saves a JNI call).
  */
 JNIEXPORT jobject JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventAlloc(JNIEnv* env,
-                                                                                   jobject obj) {
+                                                                                   jobject obj,
+                                                                                   jboolean begin) {
   he_profiler_event* event = calloc(1, sizeof(he_profiler_event));
   if (event == NULL) {
     return NULL;
+  }
+  if (begin) {
+    he_profiler_event_begin(event);
   }
   return (*env)->NewDirectByteBuffer(env, (void*) event, sizeof(he_profiler_event));
 }

@@ -19,7 +19,7 @@ public final class HEProfilerJNITest {
 		HEProfilerJNI profiler = HEProfilerJNI.get();
 		assertNotNull("HEProfiler", profiler);
 		assertEquals(0, profiler.init(1, 0, null, 20, null, null));
-		ByteBuffer event = profiler.eventAlloc();
+		ByteBuffer event = profiler.eventAlloc(false);
 		assertNotNull("event", event);
 		assertEquals(0, profiler.eventBegin(event));
 		assertEquals(0, profiler.eventEndBegin(event, 0, 0, 1));

@@ -30,7 +30,7 @@ public final class HEProfilerJNI {
 
 	public native int finish();
 
-	public native ByteBuffer eventAlloc();
+	public native ByteBuffer eventAlloc(boolean begin);
 
 	public native void eventFree(ByteBuffer ptr);
 

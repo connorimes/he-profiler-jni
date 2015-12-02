@@ -20,7 +20,11 @@ public class DefaultHEPEvent implements HeartbeatEnergyMonProfilerEvent {
 	}
 
 	public static DefaultHEPEvent create() {
-		final ByteBuffer ptr = HEProfilerJNI.get().eventAlloc();
+		return create(false);
+	}
+
+	public static DefaultHEPEvent create(boolean begin) {
+		final ByteBuffer ptr = HEProfilerJNI.get().eventAlloc(begin);
 		if (ptr == null) {
 			throw new IllegalStateException("Failed to allocate event over JNI");
 		}
