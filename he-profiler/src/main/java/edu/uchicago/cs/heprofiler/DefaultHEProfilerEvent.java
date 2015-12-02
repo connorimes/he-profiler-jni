@@ -38,6 +38,14 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 		}
 	}
 
+	public void eventEnd(final int profiler, final long id) {
+		eventEnd(profiler, id, 1, false);
+	}
+
+	public void eventEnd(final int profiler, final long id, final boolean finish) {
+		eventEnd(profiler, id, 1, finish);
+	}
+
 	public void eventEnd(final int profiler, final long id, final long work) {
 		eventEnd(profiler, id, work, false);
 	}
@@ -50,6 +58,10 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 		if (finish) {
 			nativePtr = null;
 		}
+	}
+
+	public void eventEndBegin(final int profiler, final long id) {
+		eventEndBegin(profiler, id, 1);
 	}
 
 	public void eventEndBegin(final int profiler, final long id, final long work) {

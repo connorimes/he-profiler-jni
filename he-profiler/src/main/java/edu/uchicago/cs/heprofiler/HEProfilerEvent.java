@@ -13,12 +13,31 @@ public interface HEProfilerEvent {
 	void eventBegin();
 
 	/**
-	 * End an event by taking timing and energy readings and issuing a
-	 * heartbeat.
+	 * End an event. Defaults to 1 unit of work.
+	 * 
+	 * @param profiler
+	 * @param id
+	 * @see #eventEnd(int, long, long, boolean)
+	 */
+	void eventEnd(int profiler, long id);
+
+	/**
+	 * End an event. Defaults to 1 unit of work.
+	 * 
+	 * @param profiler
+	 * @param id
+	 * @param finish
+	 * @see #eventEnd(int, long, long, boolean)
+	 */
+	void eventEnd(int profiler, long id, boolean finish);
+
+	/**
+	 * End an event.
 	 * 
 	 * @param profiler
 	 * @param id
 	 * @param work
+	 * @see #eventEnd(int, long, long, boolean)
 	 */
 	void eventEnd(int profiler, long id, long work);
 
@@ -34,6 +53,15 @@ public interface HEProfilerEvent {
 	 * @param finish
 	 */
 	void eventEnd(int profiler, long id, long work, boolean finish);
+
+	/**
+	 * End/Begin event. Defaults to 1 unit of work.
+	 * 
+	 * @param profiler
+	 * @param id
+	 * @see HEProfilerEvent#eventEndBegin(int, long, long)
+	 */
+	void eventEndBegin(int profiler, long id);
 
 	/**
 	 * End an event by taking timing and energy readings and issuing a
