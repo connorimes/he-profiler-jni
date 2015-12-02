@@ -1,7 +1,6 @@
 package edu.uchicago.cs.heprofiler;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Initialize and finish the native Heartbeat/EnergyMon profilers. Methods are
@@ -10,11 +9,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Connor Imes
  */
 public class HEProfiler {
-	protected static final AtomicBoolean initialized = new AtomicBoolean(false);
-	protected static final AtomicBoolean finished = new AtomicBoolean(false);
+	protected static boolean initialized = false;
 
 	/**
-	 * Initialize the profilers. This method should only be called once!
+	 * Check if the profiler is initialized.
+	 * 
+	 * @return true if initialized, false otherwise
+	 */
+	public static synchronized boolean isInitialized() {
+		return initialized;
+	}
+
+	/**
+	 * Initialize the profilers.
 	 * 
 	 * @param numProfilers
 	 * @param applicationProfiler
@@ -23,45 +30,40 @@ public class HEProfiler {
 	 * @param envVarPrefix
 	 * @param logPath
 	 * @throws IllegalStateException
-	 *             if already initialized
+	 *             if already initialized or initialization fails
 	 */
-	public static void init(final int numProfilers, final int applicationProfiler, final String[] profilerNames,
-			final long defaultWindowSize, final String envVarPrefix, final String logPath) {
-		if (initialized.compareAndSet(false, true)) {
+	public static synchronized void init(final int numProfilers, final int applicationProfiler,
+			final String[] profilerNames, final long defaultWindowSize, final String envVarPrefix,
+			final String logPath) {
+		if (initialized) {
+			throw new IllegalStateException("Already initialized!");
+		} else {
 			if (HEProfilerJNI.get().init(numProfilers, applicationProfiler, profilerNames, defaultWindowSize,
 					envVarPrefix, logPath) != 0) {
 				throw new IllegalStateException("Init failed");
 			}
-		} else {
-			throw new IllegalStateException("Already initialized!");
+			initialized = true;
 		}
-
 	}
 
 	/**
-	 * Destroy the profilers. This method should only be called once, and
+	 * Destroy the profilers.
 	 * {@link #init(int, int, String[], long, String, String)} must have been
 	 * called first.
 	 * 
 	 * @throws IllegalStateException
-	 *             if not initialized or already finished
+	 *             if not initialized or finish fails
 	 */
-	public static void finish() {
-		if (!initialized.get()) {
+	public static synchronized void finish() {
+		if (initialized) {
+			initialized = false;
+			if (HEProfilerJNI.get().finish() != 0) {
+				throw new IllegalStateException("Finish failed");
+			}
+		} else {
 			throw new IllegalStateException("Not initialized!");
 		}
-		try {
-			if (finished.compareAndSet(false, true)) {
-				if (HEProfilerJNI.get().finish() != 0) {
-					throw new IllegalStateException("Finish failed");
-				}
-			} else {
-				throw new IllegalStateException("Already finished!");
-			}
-		} finally {
-			initialized.set(false);
-			finished.set(false);
-		}
+
 	}
 
 	/**
