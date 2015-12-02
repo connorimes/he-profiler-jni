@@ -124,32 +124,45 @@ JNIEXPORT void JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventFree(J
   }
 }
 
-JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventBegin(JNIEnv* env,
-                                                                                jobject obj,
-                                                                                jobject ptr) {
-  MACRO_GET_EVENT_OR_RETURN(-1);
+/**
+ * Return true on success, false otherwise.
+ */
+JNIEXPORT jboolean JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventBegin(JNIEnv* env,
+                                                                                    jobject obj,
+                                                                                    jobject ptr) {
+  MACRO_GET_EVENT_OR_RETURN(JNI_FALSE);
   he_profiler_event_begin(event);
-  return 0;
+  return JNI_TRUE;
 }
 
-JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventEnd(JNIEnv* env,
-                                                                              jobject obj,
-                                                                              jobject ptr,
-                                                                              jint profiler,
-                                                                              jlong id,
-                                                                              jlong work) {
-  MACRO_GET_EVENT_OR_RETURN(-1);
+/**
+ * Return true on success, false otherwise.
+ */
+JNIEXPORT jboolean JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventEnd(JNIEnv* env,
+                                                                                  jobject obj,
+                                                                                  jobject ptr,
+                                                                                  jint profiler,
+                                                                                  jlong id,
+                                                                                  jlong work,
+                                                                                  jboolean isFree) {
+  MACRO_GET_EVENT_OR_RETURN(JNI_FALSE);
   he_profiler_event_end(profiler, id, work, event);
-  return 0;
+  if (isFree) {
+    free(event);
+  }
+  return JNI_TRUE;
 }
 
-JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventEndBegin(JNIEnv* env,
-                                                                                   jobject obj,
-                                                                                   jobject ptr,
-                                                                                   jint profiler,
-                                                                                   jlong id,
-                                                                                   jlong work) {
-  MACRO_GET_EVENT_OR_RETURN(-1);
+/**
+ * Return true on success, false otherwise.
+ */
+JNIEXPORT jboolean JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventEndBegin(JNIEnv* env,
+                                                                                       jobject obj,
+                                                                                       jobject ptr,
+                                                                                       jint profiler,
+                                                                                       jlong id,
+                                                                                       jlong work) {
+  MACRO_GET_EVENT_OR_RETURN(JNI_FALSE);
   he_profiler_event_end_begin(profiler, id, work, event);
-  return 0;
+  return JNI_TRUE;
 }

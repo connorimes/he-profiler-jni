@@ -11,6 +11,8 @@ public interface HeartbeatEnergyMonProfilerEvent {
 
 	void eventEnd(int profiler, long id, long work);
 
+	void eventEnd(int profiler, long id, long work, boolean finish);
+
 	void eventEndBegin(int profiler, long id, long work);
 
 	void finish();

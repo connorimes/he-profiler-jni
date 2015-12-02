@@ -34,9 +34,9 @@ public final class HEProfilerJNI {
 
 	public native void eventFree(ByteBuffer ptr);
 
-	public native int eventBegin(ByteBuffer ptr);
+	public native boolean eventBegin(ByteBuffer ptr);
 
-	public native int eventEnd(ByteBuffer ptr, int profiler, long id, long work);
+	public native boolean eventEnd(ByteBuffer ptr, int profiler, long id, long work, boolean free);
 
-	public native int eventEndBegin(ByteBuffer ptr, int profiler, long id, long work);
+	public native boolean eventEndBegin(ByteBuffer ptr, int profiler, long id, long work);
 }

@@ -23,7 +23,7 @@ public class DefaultHEPEvent implements HeartbeatEnergyMonProfilerEvent {
 		return create(false);
 	}
 
-	public static DefaultHEPEvent create(boolean begin) {
+	public static DefaultHEPEvent create(final boolean begin) {
 		final ByteBuffer ptr = HEProfilerJNI.get().eventAlloc(begin);
 		if (ptr == null) {
 			throw new IllegalStateException("Failed to allocate event over JNI");
@@ -33,17 +33,30 @@ public class DefaultHEPEvent implements HeartbeatEnergyMonProfilerEvent {
 
 	public void eventBegin() {
 		enforceNotFinished();
-		HEProfilerJNI.get().eventBegin(nativePtr);
+		if (!HEProfilerJNI.get().eventBegin(nativePtr)) {
+			throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+		}
 	}
 
 	public void eventEnd(final int profiler, final long id, final long work) {
+		eventEnd(profiler, id, work, false);
+	}
+
+	public void eventEnd(final int profiler, final long id, final long work, final boolean finish) {
 		enforceNotFinished();
-		HEProfilerJNI.get().eventEnd(nativePtr, profiler, id, work);
+		if (!HEProfilerJNI.get().eventEnd(nativePtr, profiler, id, work, finish)) {
+			throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+		}
+		if (finish) {
+			nativePtr = null;
+		}
 	}
 
 	public void eventEndBegin(final int profiler, final long id, final long work) {
 		enforceNotFinished();
-		HEProfilerJNI.get().eventEndBegin(nativePtr, profiler, id, work);
+		if (!HEProfilerJNI.get().eventEndBegin(nativePtr, profiler, id, work)) {
+			throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+		}
 	}
 
 	/**
