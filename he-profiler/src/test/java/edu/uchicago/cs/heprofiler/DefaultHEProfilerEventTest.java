@@ -10,17 +10,17 @@ import org.junit.Test;
  * 
  * @author Connor Imes
  */
-public final class DefaultHEPEventTest {
+public final class DefaultHEProfilerEventTest {
 
 	@BeforeClass
 	public static void init() {
-		HeartbeatEnergyMonProfiler.init(1, 0, null, 20, null, null);
+		HEProfiler.init(1, 0, null, 20, null, null);
 	}
 
 	@AfterClass
 	public static void teardown() {
 		try {
-			HeartbeatEnergyMonProfiler.finish();
+			HEProfiler.finish();
 		} catch (IllegalStateException e) {
 			// do nothing
 		}
@@ -28,7 +28,7 @@ public final class DefaultHEPEventTest {
 
 	@Test
 	public void test_normal() {
-		DefaultHEPEvent profiler = DefaultHEPEvent.create();
+		DefaultHEProfilerEvent profiler = DefaultHEProfilerEvent.create();
 		profiler.eventBegin();
 		profiler.eventEndBegin(0, 0, 1);
 		profiler.eventEnd(0, 1, 1);

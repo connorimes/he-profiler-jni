@@ -12,23 +12,23 @@ import java.nio.ByteBuffer;
  * 
  * @author Connor Imes
  */
-public class DefaultHEPEvent implements HeartbeatEnergyMonProfilerEvent {
+public class DefaultHEProfilerEvent implements HEProfilerEvent {
 	protected volatile ByteBuffer nativePtr;
 
-	protected DefaultHEPEvent(final ByteBuffer nativePtr) {
+	protected DefaultHEProfilerEvent(final ByteBuffer nativePtr) {
 		this.nativePtr = nativePtr;
 	}
 
-	public static DefaultHEPEvent create() {
+	public static DefaultHEProfilerEvent create() {
 		return create(false);
 	}
 
-	public static DefaultHEPEvent create(final boolean begin) {
+	public static DefaultHEProfilerEvent create(final boolean begin) {
 		final ByteBuffer ptr = HEProfilerJNI.get().eventAlloc(begin);
 		if (ptr == null) {
 			throw new IllegalStateException("Failed to allocate event over JNI");
 		}
-		return new DefaultHEPEvent(ptr);
+		return new DefaultHEProfilerEvent(ptr);
 	}
 
 	public void eventBegin() {

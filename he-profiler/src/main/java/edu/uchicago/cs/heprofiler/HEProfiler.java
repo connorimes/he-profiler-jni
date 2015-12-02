@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  * @author Connor Imes
  */
-public class HeartbeatEnergyMonProfiler {
+public class HEProfiler {
 	protected static final AtomicBoolean initialized = new AtomicBoolean(false);
 	protected static final AtomicBoolean finished = new AtomicBoolean(false);
 

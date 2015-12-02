@@ -5,7 +5,7 @@ package edu.uchicago.cs.heprofiler;
  * 
  * @author Connor Imes
  */
-public interface HeartbeatEnergyMonProfilerEvent {
+public interface HEProfilerEvent {
 
 	/**
 	 * Begin an event by taking timing and energy readings.

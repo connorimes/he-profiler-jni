@@ -5,21 +5,21 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests for {@link HeartbeatEnergyMonProfiler}.
+ * Tests for {@link HEProfiler}.
  * 
  * @author Connor Imes
  */
-public final class HeartbeatEnergyMonProfilerTest {
+public final class HEProfilerTest {
 
 	@Before
 	public void init() {
-		HeartbeatEnergyMonProfiler.init(1, -1, null, 20, null, null);
+		HEProfiler.init(1, -1, null, 20, null, null);
 	}
 
 	@After
 	public void destroy() {
 		try {
-			HeartbeatEnergyMonProfiler.finish();
+			HEProfiler.finish();
 		} catch (IllegalStateException e) {
 			// do nothing
 		}
@@ -32,13 +32,13 @@ public final class HeartbeatEnergyMonProfilerTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void test_double_init() {
-		HeartbeatEnergyMonProfiler.init(1, -1, null, 20, null, null);
+		HEProfiler.init(1, -1, null, 20, null, null);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void test_double_finish() {
-		HeartbeatEnergyMonProfiler.finish();
-		HeartbeatEnergyMonProfiler.finish();
+		HEProfiler.finish();
+		HEProfiler.finish();
 	}
 
 }
