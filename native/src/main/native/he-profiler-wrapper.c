@@ -170,11 +170,11 @@ JNIEXPORT jboolean JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventEn
                                                                                   jlong work,
                                                                                   jboolean isFree) {
   MACRO_GET_EVENT_OR_RETURN(JNI_FALSE);
-  he_profiler_event_end(profiler, id, work, event);
+  jboolean ret = he_profiler_event_end(profiler, id, work, event) ? JNI_FALSE : JNI_TRUE;
   if (isFree) {
     free(event);
   }
-  return JNI_TRUE;
+  return ret;
 }
 
 /**
@@ -187,6 +187,5 @@ JNIEXPORT jboolean JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventEn
                                                                                        jlong id,
                                                                                        jlong work) {
   MACRO_GET_EVENT_OR_RETURN(JNI_FALSE);
-  he_profiler_event_end_begin(profiler, id, work, event);
-  return JNI_TRUE;
+  return he_profiler_event_end_begin(profiler, id, work, event) ? JNI_FALSE : JNI_TRUE;
 }
