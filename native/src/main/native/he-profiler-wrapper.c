@@ -33,21 +33,43 @@ JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_init(JNIEnv
                                                                           jstring envVarPrefix,
                                                                           jstring logPath) {
   int ret = 0;
-  int i;
+  int i, j;
   jsize nnames = 0;
+  jstring string;
   const char** c_profilerNames = NULL;
+
+  if (numProfilers == 0) {
+    return -1;
+  }
 
   // get profiler names
   if (profilerNames != NULL) {
     nnames = (*env)->GetArrayLength(env, profilerNames);
-    if (nnames > 0) {
-      c_profilerNames = malloc(nnames * sizeof(char*));
-      if (c_profilerNames != NULL) {
-        for (i = 0; i < nnames; i++) {
-          jstring string = (jstring) (*env)->GetObjectArrayElement(env, profilerNames, i);
-          const char* name = (*env)->GetStringUTFChars(env, string, NULL);
-          c_profilerNames[i] = name;
+    // length of names array must match the number of profilers
+    if (nnames != numProfilers) {
+      return -1;
+    }
+    c_profilerNames = malloc(nnames * sizeof(char*));
+    if (c_profilerNames == NULL) {
+      return -1;
+    }
+    for (i = 0; i < nnames; i++) {
+      string = (jstring) (*env)->GetObjectArrayElement(env, profilerNames, i);
+      if (string == NULL) {
+        c_profilerNames[i] = NULL;
+      } else {
+        const char* name = (*env)->GetStringUTFChars(env, string, NULL);
+        if (name == NULL) {
+          // failed to get C-compatible string from non-null Java string - need to cleanup
+          for (j = 0; j < i; j++) {
+            string = (jstring) (*env)->GetObjectArrayElement(env, profilerNames, j);
+            if (string != NULL) {
+              (*env)->ReleaseStringUTFChars(env, string, c_profilerNames[j]);
+            }
+          }
+          return -1;
         }
+        c_profilerNames[i] = name;
       }
     }
   }
@@ -80,8 +102,10 @@ JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_init(JNIEnv
   }
   if (c_profilerNames != NULL) {
     for (i = 0; i < nnames; i++) {
-      jstring string = (jstring) (*env)->GetObjectArrayElement(env, profilerNames, i);
-      (*env)->ReleaseStringUTFChars(env, string, c_profilerNames[i]);
+      string = (jstring) (*env)->GetObjectArrayElement(env, profilerNames, i);
+      if (string != NULL) {
+        (*env)->ReleaseStringUTFChars(env, string, c_profilerNames[i]);
+      }
     }
     free(c_profilerNames);
   }
