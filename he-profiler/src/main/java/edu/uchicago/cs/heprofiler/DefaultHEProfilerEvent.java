@@ -1,22 +1,26 @@
 package edu.uchicago.cs.heprofiler;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * A profiling event. This implementation is a simple wrapper around the JNI
  * functions.
  * 
- * This implementation is <b>NOT</b> thread safe and should be synchronized
- * externally. Attempting to perform operations after {@link #finish()} is
- * called will result in an {@link IllegalStateException}.
+ * Attempting to perform operations after {@link #finish()} is called will
+ * result in an {@link IllegalStateException}.
  * 
  * @author Connor Imes
  */
 public class DefaultHEProfilerEvent implements HEProfilerEvent {
 	protected volatile ByteBuffer nativePtr;
+	// r/w lock for pointer to prevent race conditions that could cause crash
+	protected final ReadWriteLock lock;
 
 	protected DefaultHEProfilerEvent(final ByteBuffer nativePtr) {
 		this.nativePtr = nativePtr;
+		this.lock = new ReentrantReadWriteLock(true);
 	}
 
 	public static DefaultHEProfilerEvent create() {
@@ -32,9 +36,14 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 	}
 
 	public void eventBegin() {
-		enforceNotFinished();
-		if (!HEProfilerJNI.get().eventBegin(nativePtr)) {
-			throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+		try {
+			lock.readLock().lock();
+			enforceNotFinished();
+			if (!HEProfilerJNI.get().eventBegin(nativePtr)) {
+				throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+			}
+		} finally {
+			lock.readLock().unlock();
 		}
 	}
 
@@ -51,12 +60,17 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 	}
 
 	public void eventEnd(final int profiler, final long id, final long work, final boolean finish) {
-		enforceNotFinished();
-		if (!HEProfilerJNI.get().eventEnd(nativePtr, profiler, id, work, finish)) {
-			throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
-		}
-		if (finish) {
-			nativePtr = null;
+		try {
+			lock.readLock().lock();
+			enforceNotFinished();
+			if (!HEProfilerJNI.get().eventEnd(nativePtr, profiler, id, work, finish)) {
+				throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+			}
+			if (finish) {
+				nativePtr = null;
+			}
+		} finally {
+			lock.readLock().unlock();
 		}
 	}
 
@@ -65,9 +79,14 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 	}
 
 	public void eventEndBegin(final int profiler, final long id, final long work) {
-		enforceNotFinished();
-		if (!HEProfilerJNI.get().eventEndBegin(nativePtr, profiler, id, work)) {
-			throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+		try {
+			lock.readLock().lock();
+			enforceNotFinished();
+			if (!HEProfilerJNI.get().eventEndBegin(nativePtr, profiler, id, work)) {
+				throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+			}
+		} finally {
+			lock.readLock().unlock();
 		}
 	}
 
@@ -80,8 +99,14 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 	}
 
 	public void finish() {
-		enforceNotFinished();
-		finishAndFree();
+		try {
+			lock.writeLock().lock();
+			enforceNotFinished();
+			finishAndFree();
+		} finally {
+			lock.writeLock().unlock();
+		}
+
 	}
 
 	@Override
