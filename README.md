@@ -1,4 +1,4 @@
-# Heartbeat/EnergyMon Java Bindings
+# Heartbeats/EnergyMon Profiler Java Bindings
 
 This project provides Java bindings and thin wrappers around the `he-profiler` library.
 
@@ -40,8 +40,7 @@ To integrate with the library, add it as a Maven dependency to your project's `p
     </dependency>
 ```
 
-`edu.uchicago.cs.heprofiler.HeartbeatEnergyMonProfiler` provides static methods for initializing and destroying the profilers.
-Events are processed through the `edu.uchicago.cs.heprofiler.HeartbeatEnergyMonProfilerEvent` interface - the default implementation is `edu.uchicago.cs.heprofiler.DefaultHEPEvent`. 
-Note that the default implementation is not thread safe - you must provide synchronization as needed!
+`edu.uchicago.cs.heprofiler.HEProfiler` provides static methods for initializing and destroying the profilers.
+Events are processed through the `edu.uchicago.cs.heprofiler.HEProfilerEvent` interface - the default implementation is `edu.uchicago.cs.heprofiler.DefaultHEProfilerEvent`.
 
 When launching, you will need to set the property `java.library.path` to include the location of the native library created by the module `libhe-profiler-wrapper` and its dependencies.
