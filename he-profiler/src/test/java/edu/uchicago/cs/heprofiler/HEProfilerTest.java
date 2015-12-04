@@ -19,7 +19,7 @@ public final class HEProfilerTest {
 	@After
 	public void destroy() {
 		try {
-			HEProfiler.finish();
+			HEProfiler.dispose();
 		} catch (IllegalStateException e) {
 			// do nothing
 		}
@@ -36,9 +36,9 @@ public final class HEProfilerTest {
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void test_double_finish() {
-		HEProfiler.finish();
-		HEProfiler.finish();
+	public void test_double_dipose() {
+		HEProfiler.dispose();
+		HEProfiler.dispose();
 	}
 
 }

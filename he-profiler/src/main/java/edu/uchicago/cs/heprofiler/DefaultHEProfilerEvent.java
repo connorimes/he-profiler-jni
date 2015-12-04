@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * A profiling event. This implementation is a simple wrapper around the JNI
  * functions.
  * 
- * Attempting to perform operations after {@link #finish()} is called will
+ * Attempting to perform operations after {@link #dispose()} is called will
  * result in an {@link IllegalStateException}.
  * 
  * @author Connor Imes
@@ -38,9 +38,9 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 	public void eventBegin() {
 		try {
 			lock.readLock().lock();
-			enforceNotFinished();
+			enforceNotDisposed();
 			if (!HEProfilerJNI.get().eventBegin(nativePtr)) {
-				throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+				throw new IllegalStateException("Failed to begin event in JNI");
 			}
 		} finally {
 			lock.readLock().unlock();
@@ -51,22 +51,22 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 		eventEnd(profiler, id, 1, false);
 	}
 
-	public void eventEnd(final int profiler, final long id, final boolean finish) {
-		eventEnd(profiler, id, 1, finish);
+	public void eventEnd(final int profiler, final long id, final boolean dispose) {
+		eventEnd(profiler, id, 1, dispose);
 	}
 
 	public void eventEnd(final int profiler, final long id, final long work) {
 		eventEnd(profiler, id, work, false);
 	}
 
-	public void eventEnd(final int profiler, final long id, final long work, final boolean finish) {
+	public void eventEnd(final int profiler, final long id, final long work, final boolean dispose) {
 		try {
 			lock.readLock().lock();
-			enforceNotFinished();
-			if (!HEProfilerJNI.get().eventEnd(nativePtr, profiler, id, work, finish)) {
-				throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+			enforceNotDisposed();
+			if (!HEProfilerJNI.get().eventEnd(nativePtr, profiler, id, work, dispose)) {
+				throw new IllegalStateException("Failed to end event in JNI");
 			}
-			if (finish) {
+			if (dispose) {
 				nativePtr = null;
 			}
 		} finally {
@@ -81,9 +81,9 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 	public void eventEndBegin(final int profiler, final long id, final long work) {
 		try {
 			lock.readLock().lock();
-			enforceNotFinished();
+			enforceNotDisposed();
 			if (!HEProfilerJNI.get().eventEndBegin(nativePtr, profiler, id, work)) {
-				throw new IllegalStateException("Unexpected failure in JNI - bad pointer?");
+				throw new IllegalStateException("Failed to end/begin event in JNI");
 			}
 		} finally {
 			lock.readLock().unlock();
@@ -91,18 +91,18 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 	}
 
 	/**
-	 * This method does NOT enforce if this instance is already finished!
+	 * This method does NOT enforce if this instance is already freed!
 	 */
-	protected void finishAndFree() {
+	protected void free() {
 		HEProfilerJNI.get().eventFree(nativePtr);
 		nativePtr = null;
 	}
 
-	public void finish() {
+	public void dispose() {
 		try {
 			lock.writeLock().lock();
-			enforceNotFinished();
-			finishAndFree();
+			enforceNotDisposed();
+			free();
 		} finally {
 			lock.writeLock().unlock();
 		}
@@ -114,7 +114,7 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 		// last-ditch effort to cleanup if user didn't follow protocol
 		try {
 			if (nativePtr != null) {
-				finishAndFree();
+				free();
 			}
 		} finally {
 			super.finalize();
@@ -124,9 +124,9 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 	/**
 	 * Throws an {@link IllegalStateException} if {@link #nativePtr} is null.
 	 */
-	protected void enforceNotFinished() {
+	protected void enforceNotDisposed() {
 		if (nativePtr == null) {
-			throw new IllegalStateException("Already finished");
+			throw new IllegalStateException("Already disposed");
 		}
 	}
 }

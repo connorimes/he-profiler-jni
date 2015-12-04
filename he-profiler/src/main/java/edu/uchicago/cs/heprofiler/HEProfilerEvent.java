@@ -26,10 +26,10 @@ public interface HEProfilerEvent {
 	 * 
 	 * @param profiler
 	 * @param id
-	 * @param finish
+	 * @param dispose
 	 * @see #eventEnd(int, long, long, boolean)
 	 */
-	void eventEnd(int profiler, long id, boolean finish);
+	void eventEnd(int profiler, long id, boolean dispose);
 
 	/**
 	 * End an event.
@@ -43,16 +43,16 @@ public interface HEProfilerEvent {
 
 	/**
 	 * End an event by taking timing and energy readings and issuing a
-	 * heartbeat. Optionally finish (free native resources) - saves a JNI
+	 * heartbeat. Optionally dispose (free native resources) - saves a JNI
 	 * boundary crossing if the event is not going to be reused since
-	 * {@link #finish()} would need to be called eventually.
+	 * {@link #dispose()} would need to be called eventually.
 	 * 
 	 * @param profiler
 	 * @param id
 	 * @param work
-	 * @param finish
+	 * @param dispose
 	 */
-	void eventEnd(int profiler, long id, long work, boolean finish);
+	void eventEnd(int profiler, long id, long work, boolean dispose);
 
 	/**
 	 * End/Begin event. Defaults to 1 unit of work.
@@ -81,5 +81,5 @@ public interface HEProfilerEvent {
 	 * Free native resources. The instance will likely not be usable after this
 	 * method is invoked.
 	 */
-	void finish();
+	void dispose();
 }

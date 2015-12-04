@@ -3,7 +3,7 @@ package edu.uchicago.cs.heprofiler;
 import java.util.Arrays;
 
 /**
- * Initialize and finish the native Heartbeat/EnergyMon profilers. Methods are
+ * Initialize and dispose the native Heartbeat/EnergyMon profilers. Methods are
  * static because profilers are global.
  * 
  * @author Connor Imes
@@ -40,7 +40,7 @@ public class HEProfiler {
 		} else {
 			if (HEProfilerJNI.get().init(numProfilers, applicationProfiler, profilerNames, defaultWindowSize,
 					envVarPrefix, logPath) != 0) {
-				throw new IllegalStateException("Init failed");
+				throw new IllegalStateException("Init failed in JNI");
 			}
 			initialized = true;
 		}
@@ -54,11 +54,11 @@ public class HEProfiler {
 	 * @throws IllegalStateException
 	 *             if not initialized or finish fails
 	 */
-	public static synchronized void finish() {
+	public static synchronized void dispose() {
 		if (initialized) {
 			initialized = false;
 			if (HEProfilerJNI.get().finish() != 0) {
-				throw new IllegalStateException("Finish failed");
+				throw new IllegalStateException("Finish failed in JNI");
 			}
 		} else {
 			throw new IllegalStateException("Not initialized!");

@@ -20,7 +20,7 @@ public final class DefaultHEProfilerEventTest {
 	@AfterClass
 	public static void teardown() {
 		try {
-			HEProfiler.finish();
+			HEProfiler.dispose();
 		} catch (IllegalStateException e) {
 			// do nothing
 		}
