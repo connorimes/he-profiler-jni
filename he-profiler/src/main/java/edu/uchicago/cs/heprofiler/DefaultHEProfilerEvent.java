@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 
  * @author Connor Imes
  */
-public class DefaultHEProfilerEvent implements HEProfilerEvent {
+public class DefaultHEProfilerEvent implements HEProfilerEvent, HEProfilerEvent14 {
 	protected volatile ByteBuffer nativePtr;
 	// r/w lock for pointer to prevent race conditions that could cause crash
 	protected final ReadWriteLock lock;
@@ -47,16 +47,44 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 		}
 	}
 
+	public void eventEnd(final Enum<?> profiler, final long id) {
+		if (profiler == null) {
+			throw new IllegalArgumentException();
+		}
+		eventEnd(profiler.ordinal(), id);
+	}
+
 	public void eventEnd(final int profiler, final long id) {
 		eventEnd(profiler, id, 1, false);
+	}
+
+	public void eventEnd(final Enum<?> profiler, final long id, final boolean dispose) {
+		if (profiler == null) {
+			throw new IllegalArgumentException();
+		}
+		eventEnd(profiler.ordinal(), id, dispose);
 	}
 
 	public void eventEnd(final int profiler, final long id, final boolean dispose) {
 		eventEnd(profiler, id, 1, dispose);
 	}
 
+	public void eventEnd(final Enum<?> profiler, final long id, final long work) {
+		if (profiler == null) {
+			throw new IllegalArgumentException();
+		}
+		eventEnd(profiler.ordinal(), id, work);
+	}
+
 	public void eventEnd(final int profiler, final long id, final long work) {
 		eventEnd(profiler, id, work, false);
+	}
+
+	public void eventEnd(final Enum<?> profiler, final long id, final long work, final boolean dispose) {
+		if (profiler == null) {
+			throw new IllegalArgumentException();
+		}
+		eventEnd(profiler.ordinal(), id, work, dispose);
 	}
 
 	public void eventEnd(final int profiler, final long id, final long work, final boolean dispose) {
@@ -74,8 +102,22 @@ public class DefaultHEProfilerEvent implements HEProfilerEvent {
 		}
 	}
 
+	public void eventEndBegin(final Enum<?> profiler, final long id) {
+		if (profiler == null) {
+			throw new IllegalArgumentException();
+		}
+		eventEndBegin(profiler.ordinal(), id);
+	}
+
 	public void eventEndBegin(final int profiler, final long id) {
 		eventEndBegin(profiler, id, 1);
+	}
+
+	public void eventEndBegin(final Enum<?> profiler, final long id, final long work) {
+		if (profiler == null) {
+			throw new IllegalArgumentException();
+		}
+		eventEndBegin(profiler.ordinal(), id, work);
 	}
 
 	public void eventEndBegin(final int profiler, final long id, final long work) {

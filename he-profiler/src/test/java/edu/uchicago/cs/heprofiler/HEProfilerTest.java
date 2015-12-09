@@ -1,5 +1,7 @@
 package edu.uchicago.cs.heprofiler;
 
+import static org.junit.Assert.*;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +15,7 @@ public final class HEProfilerTest {
 
 	@Before
 	public void init() {
-		HEProfiler.init(1, -1, null, 20, null, null);
+		HEProfiler.init(EnumA.class, null, 20, null, null);
 	}
 
 	@After
@@ -30,15 +32,35 @@ public final class HEProfilerTest {
 		// just need the before and after methods to run
 	}
 
+	@Test
+	public void test_good_enum() {
+		assertTrue(HEProfiler.isEnumClass(EnumA.class));
+		HEProfiler.enforceEnumClass(EnumA.class);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void test_bad_enum() {
+		assertFalse(HEProfiler.isEnumClass(EnumB.class));
+		HEProfiler.enforceEnumClass(EnumB.class);
+	}
+
 	@Test(expected = IllegalStateException.class)
 	public void test_double_init() {
-		HEProfiler.init(1, -1, null, 20, null, null);
+		HEProfiler.init(EnumA.class, null, 20, null, null);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void test_double_dipose() {
 		HEProfiler.dispose();
 		HEProfiler.dispose();
+	}
+
+	private enum EnumA {
+		A
+	}
+
+	private enum EnumB {
+		B
 	}
 
 }

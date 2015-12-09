@@ -21,7 +21,26 @@ public class HEProfiler {
 	}
 
 	/**
-	 * Initialize the profilers.
+	 * Initialize the profilers based on the given enum class. Profiler names
+	 * (and therefore logs) are automatically enabled for all enum values. If
+	 * this is not desirable, use
+	 * {@link #init(int, int, String[], long, String, String)} instead.
+	 * 
+	 * @param profilerEnum
+	 * @param applicationProfiler
+	 * @param defaultWindowSize
+	 * @param envVarPrefix
+	 * @param logPath
+	 */
+	public static synchronized <E extends Enum<E>> void init(final Class<E> profilerEnum, final E applicationProfiler,
+			final long defaultWindowSize, final String envVarPrefix, final String logPath) {
+		HEProfiler.init(profilerEnum.getEnumConstants().length,
+				applicationProfiler == null ? -1 : applicationProfiler.ordinal(),
+				HEProfiler.toProfilerNames(profilerEnum), defaultWindowSize, envVarPrefix, logPath);
+	}
+
+	/**
+	 * Initialize the profilers (Java 1.4-compatible method).
 	 * 
 	 * @param numProfilers
 	 * @param applicationProfiler
@@ -63,7 +82,6 @@ public class HEProfiler {
 		} else {
 			throw new IllegalStateException("Not initialized!");
 		}
-
 	}
 
 	/**
@@ -79,4 +97,5 @@ public class HEProfiler {
 		}
 		return Arrays.toString(e.getEnumConstants()).replaceAll("^.|.$", "").split(", ");
 	}
+
 }

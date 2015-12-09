@@ -1,11 +1,11 @@
 package edu.uchicago.cs.heprofiler;
 
 /**
- * A profiling event.
+ * A profiling event. Interface compatible with Java 1.4 (no enumerations).
  * 
  * @author Connor Imes
  */
-public interface HEProfilerEvent {
+public interface HEProfilerEvent14 {
 
 	/**
 	 * Begin an event by taking timing and energy readings.
@@ -19,7 +19,7 @@ public interface HEProfilerEvent {
 	 * @param id
 	 * @see #eventEnd(int, long, long, boolean)
 	 */
-	void eventEnd(Enum<?> profiler, long id);
+	void eventEnd(int profiler, long id);
 
 	/**
 	 * End an event. Defaults to 1 unit of work.
@@ -29,7 +29,7 @@ public interface HEProfilerEvent {
 	 * @param dispose
 	 * @see #eventEnd(int, long, long, boolean)
 	 */
-	void eventEnd(Enum<?> profiler, long id, boolean dispose);
+	void eventEnd(int profiler, long id, boolean dispose);
 
 	/**
 	 * End an event.
@@ -39,7 +39,7 @@ public interface HEProfilerEvent {
 	 * @param work
 	 * @see #eventEnd(int, long, long, boolean)
 	 */
-	void eventEnd(Enum<?> profiler, long id, long work);
+	void eventEnd(int profiler, long id, long work);
 
 	/**
 	 * End an event by taking timing and energy readings and issuing a
@@ -52,16 +52,16 @@ public interface HEProfilerEvent {
 	 * @param work
 	 * @param dispose
 	 */
-	void eventEnd(Enum<?> profiler, long id, long work, boolean dispose);
+	void eventEnd(int profiler, long id, long work, boolean dispose);
 
 	/**
 	 * End/Begin event. Defaults to 1 unit of work.
 	 * 
 	 * @param profiler
 	 * @param id
-	 * @see HEProfilerEvent#eventEndBegin(int, long, long)
+	 * @see HEProfilerEvent14#eventEndBegin(int, long, long)
 	 */
-	void eventEndBegin(Enum<?> profiler, long id);
+	void eventEndBegin(int profiler, long id);
 
 	/**
 	 * End an event by taking timing and energy readings and issuing a
@@ -75,7 +75,7 @@ public interface HEProfilerEvent {
 	 * @param id
 	 * @param work
 	 */
-	void eventEndBegin(Enum<?> profiler, long id, long work);
+	void eventEndBegin(int profiler, long id, long work);
 
 	/**
 	 * Free native resources. The instance will likely not be usable after this
