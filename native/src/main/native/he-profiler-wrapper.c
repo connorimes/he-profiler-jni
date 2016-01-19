@@ -130,8 +130,9 @@ JNIEXPORT jobject JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventAll
   if (event == NULL) {
     return NULL;
   }
-  if (begin) {
-    he_profiler_event_begin(event);
+  if (begin && he_profiler_event_begin(event)) {
+    free(event);
+    return NULL;
   }
   return (*env)->NewDirectByteBuffer(env, (void*) event, sizeof(he_profiler_event));
 }
@@ -155,8 +156,7 @@ JNIEXPORT jboolean JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventBe
                                                                                     jobject obj,
                                                                                     jobject ptr) {
   MACRO_GET_EVENT_OR_RETURN(JNI_FALSE);
-  he_profiler_event_begin(event);
-  return JNI_TRUE;
+  return he_profiler_event_begin(event) ? JNI_FALSE : JNI_TRUE;
 }
 
 /**
