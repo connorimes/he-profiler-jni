@@ -18,7 +18,7 @@ public final class HEProfilerJNITest {
 	public void test_normal() {
 		HEProfilerJNI profiler = HEProfilerJNI.get();
 		assertNotNull("HEProfiler", profiler);
-		assertEquals(0, profiler.init(1, 0, null, 20, null, null));
+		assertEquals(0, profiler.init(1, null, null, 20, 0, 0, null));
 		ByteBuffer event = profiler.eventAlloc(false);
 		assertNotNull("event", event);
 		assertTrue(profiler.eventBegin(event));
@@ -31,7 +31,7 @@ public final class HEProfilerJNITest {
 	public void test_normal_init_strings() {
 		HEProfilerJNI profiler = HEProfilerJNI.get();
 		assertNotNull("HEProfiler", profiler);
-		assertEquals(0, profiler.init(1, 0, new String[] { "Test" }, 20, "PREFIX", "target"));
+		assertEquals(0, profiler.init(1, new String[] { "Test" }, null, 20, 0, 0, "target"));
 		assertEquals(0, profiler.finish());
 	}
 

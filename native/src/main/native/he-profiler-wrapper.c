@@ -27,10 +27,11 @@
 JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_init(JNIEnv* env,
                                                                           jobject obj,
                                                                           jint numProfilers,
-                                                                          jint applicationProfiler,
                                                                           jobjectArray profilerNames,
+                                                                          jlongArray windowSizes,
                                                                           jlong defaultWindowSize,
-                                                                          jstring envVarPrefix,
+                                                                          jint applicationProfiler,
+                                                                          jlong appProfilerMinSleepUs,
                                                                           jstring logPath) {
   int ret = 0;
   int i, j;
@@ -42,15 +43,32 @@ JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_init(JNIEnv
     return -1;
   }
 
+  // get window sizes
+  jsize nwindows = 0;
+  jlong* c_window_sizes = NULL;
+  if (windowSizes != NULL) {
+    nwindows = (*env)->GetArrayLength(env, windowSizes);
+    if (nwindows != numProfilers) {
+      return -1;
+    }
+    c_window_sizes = (*env)->GetLongArrayElements(env, windowSizes, 0);
+  }
+
   // get profiler names
   if (profilerNames != NULL) {
     nnames = (*env)->GetArrayLength(env, profilerNames);
     // length of names array must match the number of profilers
     if (nnames != numProfilers) {
+      if (c_window_sizes != NULL) {
+        (*env)->ReleaseLongArrayElements(env, windowSizes, c_window_sizes, 0);
+      }
       return -1;
     }
     c_profilerNames = malloc(nnames * sizeof(char*));
     if (c_profilerNames == NULL) {
+      if (c_window_sizes != NULL) {
+        (*env)->ReleaseLongArrayElements(env, windowSizes, c_window_sizes, 0);
+      }
       return -1;
     }
     for (i = 0; i < nnames; i++) {
@@ -67,17 +85,14 @@ JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_init(JNIEnv
               (*env)->ReleaseStringUTFChars(env, string, c_profilerNames[j]);
             }
           }
+          if (c_window_sizes != NULL) {
+            (*env)->ReleaseLongArrayElements(env, windowSizes, c_window_sizes, 0);
+          }
           return -1;
         }
         c_profilerNames[i] = name;
       }
     }
-  }
-
-  // get environment variable prefix
-  const char* c_envVarPrefix = NULL;
-  if (envVarPrefix != NULL) {
-    c_envVarPrefix = (*env)->GetStringUTFChars(env, envVarPrefix, NULL);
   }
 
   // get log path
@@ -87,16 +102,14 @@ JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_init(JNIEnv
   }
   
   ret = he_profiler_init(numProfilers,
-                         applicationProfiler,
                          c_profilerNames,
+                         (uint64_t*) c_window_sizes,
                          defaultWindowSize,
-                         c_envVarPrefix,
+                         applicationProfiler,
+                         0,
                          c_logPath);
 
-  // cleanup strings
-  if (c_envVarPrefix != NULL) {
-    (*env)->ReleaseStringUTFChars(env, envVarPrefix, c_envVarPrefix);
-  }
+  // cleanup
   if (c_logPath != NULL) {
     (*env)->ReleaseStringUTFChars(env, logPath, c_logPath);
   }
@@ -108,6 +121,9 @@ JNIEXPORT jint JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_init(JNIEnv
       }
     }
     free(c_profilerNames);
+  }
+  if (c_window_sizes != NULL) {
+    (*env)->ReleaseLongArrayElements(env, windowSizes, c_window_sizes, 0);
   }
 
   return ret;
@@ -170,7 +186,7 @@ JNIEXPORT jboolean JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventEn
                                                                                   jlong work,
                                                                                   jboolean isFree) {
   MACRO_GET_EVENT_OR_RETURN(JNI_FALSE);
-  jboolean ret = he_profiler_event_end(profiler, id, work, event) ? JNI_FALSE : JNI_TRUE;
+  jboolean ret = he_profiler_event_end(event, profiler, id, work) ? JNI_FALSE : JNI_TRUE;
   if (isFree) {
     free(event);
   }
@@ -187,5 +203,5 @@ JNIEXPORT jboolean JNICALL Java_edu_uchicago_cs_heprofiler_HEProfilerJNI_eventEn
                                                                                        jlong id,
                                                                                        jlong work) {
   MACRO_GET_EVENT_OR_RETURN(JNI_FALSE);
-  return he_profiler_event_end_begin(profiler, id, work, event) ? JNI_FALSE : JNI_TRUE;
+  return he_profiler_event_end_begin(event, profiler, id, work) ? JNI_FALSE : JNI_TRUE;
 }

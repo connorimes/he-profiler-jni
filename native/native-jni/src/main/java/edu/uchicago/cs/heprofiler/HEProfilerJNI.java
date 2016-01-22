@@ -25,8 +25,8 @@ public final class HEProfilerJNI {
 		return instance;
 	}
 
-	public native int init(int numProfilers, int applicationProfiler, String[] profilerNames, long defaultWindowSize,
-			String envVarPrefix, String logPath);
+	public native int init(int numProfilers, String[] profilerNames, long[] windowSizes, long defaultWindowSize,
+			int applicationProfiler, long appProfilerMinSleepUs, String logPath);
 
 	public native int finish();
 
