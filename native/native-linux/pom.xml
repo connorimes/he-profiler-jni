@@ -10,12 +10,12 @@
   </parent>
 
   <artifactId>libhe-profiler-wrapper</artifactId>
-  <name>Heartbeat/EnergyMon Profiler Native Unix/Linux</name>
+  <name>Heartbeat/EnergyMon Profiler Native Linux</name>
   <packaging>so</packaging>
 
   <properties>
     <LDFLAGS></LDFLAGS>
-    <CFLAGS>-I/usr/local/include/he-profiler</CFLAGS>
+    <CFLAGS></CFLAGS>
   </properties>
 
   <dependencies>
@@ -33,7 +33,7 @@
         <extensions>true</extensions>
         <configuration>
           <!-- trigger javah -->
-          <javahOS>unix</javahOS>
+          <javahOS>linux</javahOS>
           <sources>
             <source>
               <directory>${basedir}/../src/main/native</directory>
@@ -45,7 +45,6 @@
           <compilerStartOptions>
             <compilerStartOption>-fPIC</compilerStartOption>
             <compilerStartOption>-Wall</compilerStartOption>
-            <compilerStartOption>-Wno-unknown-pragmas</compilerStartOption>
             <compilerStartOption>${CFLAGS}</compilerStartOption>
           </compilerStartOptions>
           <linkerStartOptions>
@@ -54,7 +53,7 @@
           <linkerEndOptions>
             <linkerEndOption>${LDFLAGS}</linkerEndOption>
             <linkerEndOption>-lhe-profiler</linkerEndOption>
-            <linkerEndOption>-lhbs-pow</linkerEndOption>
+            <linkerEndOption>-lheartbeats-simple</linkerEndOption>
             <linkerEndOption>-lenergymon-default</linkerEndOption>
           </linkerEndOptions>
         </configuration>
@@ -63,7 +62,6 @@
             <id>javah</id>
             <phase>generate-sources</phase>
             <configuration>
-              <javahOS>unix</javahOS>
               <javahProvider>default</javahProvider>
               <javahOutputDirectory>${project.build.directory}/custom-javah</javahOutputDirectory>
               <workingDirectory>${basedir}</workingDirectory>

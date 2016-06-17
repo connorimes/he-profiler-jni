@@ -14,7 +14,7 @@ public final class DefaultHEProfilerEventTest {
 
 	@BeforeClass
 	public static void init() {
-		HEProfiler.init(1, null, null, 20, 1, 0, null);
+		HEProfiler.init(1, null, null, 20, 1, 0, "target");
 	}
 
 	@AfterClass

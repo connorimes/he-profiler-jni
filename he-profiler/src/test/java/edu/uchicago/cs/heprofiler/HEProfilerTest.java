@@ -13,7 +13,7 @@ public final class HEProfilerTest {
 
 	@Before
 	public void init() {
-		HEProfiler.init(EnumA.class, null, 20, null, 0, null);
+		HEProfiler.init(EnumA.class, null, 20, null, 0, "target");
 	}
 
 	@After
@@ -32,7 +32,7 @@ public final class HEProfilerTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void test_double_init() {
-		HEProfiler.init(EnumA.class, null, 20, null, 0, null);
+		HEProfiler.init(EnumA.class, null, 20, null, 0, "target");
 	}
 
 	@Test(expected = IllegalStateException.class)
