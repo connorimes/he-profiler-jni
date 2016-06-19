@@ -30,21 +30,38 @@
           <family>linux</family>
         </os>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>edu.uchicago.cs.heprofiler</groupId>
-          <artifactId>libhe-profiler-wrapper</artifactId>
-          <type>so</type>
-          <scope>runtime</scope>
-        </dependency>
-      </dependencies>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy</id>
+                <phase>process-classes</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>edu.uchicago.cs.heprofiler</groupId>
+                      <artifactId>libhe-profiler-wrapper</artifactId>
+                      <type>so</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                      <destFileName>libhe-profiler-wrapper.so</destFileName>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-              <argLine>-Djava.library.path=${basedir}/../native/native-linux/target:${java.library.path}</argLine>
+              <argLine>-Djava.library.path=${project.build.directory}/lib:${java.library.path}</argLine>
               <environmentVariables>
                 <LD_LIBRARY_PATH>${env.LD_LIBRARY_PATH}</LD_LIBRARY_PATH>
               </environmentVariables>
